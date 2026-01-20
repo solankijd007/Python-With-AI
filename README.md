@@ -51,7 +51,7 @@ docker compose up -d
 
 1. **Create virtual environment**
 ```bash
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
@@ -66,7 +66,7 @@ pip install -r requirements.txt
 createdb fastapi_db
 
 # Update .env file with local database URL
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/fastapi_db
+DATABASE_URL=postgresql://user:password@localhost:5432/fastapi_db
 ```
 
 4. **Run database migrations**
@@ -395,7 +395,7 @@ Key environment variables in `.env`:
 
 ```env
 # Database
-DATABASE_URL=postgresql://postgres:postgres@db:5432/fastapi_db
+DATABASE_URL=postgresql://user:password@localhost:5432/fastapi_db
 
 # JWT
 SECRET_KEY=your-secret-key-here
