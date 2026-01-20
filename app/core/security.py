@@ -5,7 +5,8 @@ Implements both access tokens and refresh tokens for enhanced security.
 from datetime import datetime, timedelta
 from typing import Any, Union, Optional
 from jose import jwt, JWTError
-from passlib.context import CryptContext
+from pwdlib import PasswordHash
+from pwdlib.hashers.argon2 import Argon2Hasher
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -14,8 +15,8 @@ from app.core.config import settings
 from app.db.session import get_db
 from app import crud, models, schemas
 
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password hashing context using pwdlib with Argon2
+password_hash = PasswordHash((Argon2Hasher(),))
 
 # OAuth2 scheme for token authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
@@ -32,12 +33,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True if password matches, False otherwise
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    return password_hash.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
     """
-    Hash a password using bcrypt.
+    Hash a password using Argon2.
     
     Args:
         password: Plain text password
@@ -45,7 +46,7 @@ def get_password_hash(password: str) -> str:
     Returns:
         Hashed password
     """
-    return pwd_context.hash(password)
+    return password_hash.hash(password)
 
 
 def create_access_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
